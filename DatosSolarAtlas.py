@@ -1,4 +1,4 @@
-GeneracionSolar_ZonasRojas = { #esto es por metro cuadrado
+GeneracionSolar_ZonasRojas = { # valores en kW/m^2
     1: 287.7,
     2: 239.8,
     3: 268.2,

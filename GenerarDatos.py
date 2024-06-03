@@ -18,7 +18,7 @@ def ProduccionSolar(u, t):
     
     # Asigna diferentes valores de G_iut según la ubicacion
     if u <=  ZonaRoja:
-        return int(GeneracionSolar_ZonasRojas[t]) * 1000
+        return int(GeneracionSolar_ZonasRojas[t]) * 1000 # kW/m^2 * m^2
     
     elif  ZonaRoja < u <= ZonaNaranja:
         return int(GeneracionSolar_ZonasNaranjas[t]) * 1000
