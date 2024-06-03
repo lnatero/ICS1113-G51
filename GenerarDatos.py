@@ -1,8 +1,13 @@
 import pandas as pd
 import random
+import os
 from DatosSolarAtlas import GeneracionSolar_ZonasNaranjas,GeneracionSolar_ZonasAmarillas,GeneracionSolar_ZonasRojas,GeneracionSolar_ZonasVerdes,DatosDemanda
 #La ubicaciones disponibles U y K estan ordenadas de norte a sur.
 #Modelaremos de Arica hasta Puerto Montt, porque, la zona mas austral de chile es muy compleja de modelar, debido a que es muy dificil encontrar un patron en los datos en esa zona.
+
+abspath = os.path.abspath(__file__)
+root = os.path.dirname(abspath)
+os.chdir(root)
 
 def ProduccionSolar(u, t): 
     
@@ -209,6 +214,10 @@ tablaDistancias = generar_tablaDistancias(u_max, k_max)
 # Mostrar
 
 # Guardar la tabla en un archivo CSV
+print(os.getcwd())
+os.chdir("datos/tablas")
+print(os.getcwd())
+
 tablaGen.to_csv("tablaGeneracion.csv", index=False)
 tablaCostos_C.to_csv("tablaCostosContruccion.csv", index=False)
 tablaCostos_P.to_csv("tablaCostosProduccion.csv", index=False)

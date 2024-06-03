@@ -1,6 +1,11 @@
 from gurobipy import Model, GRB, quicksum
 import pandas as pd
 import csv
+import os
+
+abspath = os.path.abspath(__file__)
+root = os.path.dirname(abspath)
+os.chdir(root)
 
 generacion_df = pd.read_csv('tablaGeneracion.csv')
 demanda_df = pd.read_csv('tablaDemanda.csv')
@@ -107,7 +112,9 @@ m.optimize()
 # Imprimir costo total
 print(f"Costo anual total : {m.ObjVal}")
 
-
+print(os.getcwd())
+os.chdir("datos/meses")
+print(os.getcwd())
 for t in T:
     filename = f'mes{t}.csv'
     with open(filename, 'w', newline='') as csvfile:
