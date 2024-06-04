@@ -7,12 +7,12 @@ abspath = os.path.abspath(__file__)
 root = os.path.dirname(abspath)
 os.chdir(root)
 
-generacion_df = pd.read_csv('tablaGeneracion.csv')
-demanda_df = pd.read_csv('tablaDemanda.csv')
-costo_df = pd.read_csv('tablaCostosContruccion.csv')
-disponibilidad_df = pd.read_csv('tablaDisponibilidad.csv')
-distancia_df = pd.read_csv('tablaDistancias.csv')
-costo_produccion = pd.read_csv('tablaCostosProduccion.csv')
+generacion_df = pd.read_csv('datos/tablas/tablaGeneracion.csv', encoding='utf-8')
+demanda_df = pd.read_csv('datos/tablas/tablaDemanda.csv', encoding='utf-8')
+costo_df = pd.read_csv('datos/tablas/tablaCostosContruccion.csv', encoding='utf-8')
+disponibilidad_df = pd.read_csv('datos/tablas/tablaDisponibilidad.csv', encoding='utf-8')
+distancia_df = pd.read_csv('datos/tablas/tablaDistancias.csv', encoding='utf-8')
+costo_produccion = pd.read_csv('datos/tablas/tablaCostosProduccion.csv', encoding='utf-8')
 
 G = {(row['i'], row['u'], row['t']): row['G_iut'] for idx, row in generacion_df.iterrows()}
 D = {(row['k'], row['t']): row['D_kt'] for idx, row in demanda_df.iterrows()}
@@ -115,9 +115,10 @@ print(f"Costo anual total : {m.ObjVal}")
 print(os.getcwd())
 os.chdir("datos/meses")
 print(os.getcwd())
+
 for t in T:
     filename = f'mes{t}.csv'
-    with open(filename, 'w', newline='') as csvfile:
+    with open(filename, 'w', newline='', encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(['Ubicación', 'Tipo Energía', 'Subestación', 'Energía (MWh)'])
         for u in U:
@@ -126,3 +127,8 @@ for t in T:
                     for i in I:
                         if y[i, u].X > 0.5:  # Verificar si se construyó una planta en la ubicación u
                             writer.writerow([u, i, k, X[u, k, t].X])
+
+for u in U:
+    for i in I:
+        if y[i, u].X == 1:
+            print(f"Se construyó una planta de tipo {i} en la ubicación {u}")

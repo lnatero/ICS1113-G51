@@ -1,0 +1,52 @@
+**************************************************
+CONSULTA
+**************************************************
+DATOS GENERADOS POR EL EXPLORADOR DE ENERGIAS RENOVABLES
+Fuente:Ministerio de Energia - Departamento de Geofisica Universidad de Chile
+""
+Hora de creacion del archivo:,2024-06-03 19:54:33.386523
+""
+Tipo de consulta:,SERIES
+Periodo Extraidos:,2010-01-01 00:00:00,2010-12-31 23:00:00
+Intervalo:,month
+Tipical Meteorological Year:,SI,Se ha generado datos para un agno tipico (nominalmente 1990)
+""
+Numero de sitios solicitados:,1
+Numero de variables solicitadas:,1
+**************************************************
+SITIOS
+**************************************************
+Nombre,Longitud,Latitud,Altura Terreno (m)
+,-69.6003195790712,-25.422528678216548,2258.0
+**************************************************
+VARIABLES
+**************************************************
+Aero
+Nombre,Potencia Aerogenerador
+Unidades,kW
+Estadistica,mean
+density_correction,True
+recon,on
+hgt,100
+turbine,Siemens SWT-2.3-101
+efficiency_factor,1
+""
+**************************************************
+DATOS
+**************************************************
+Sitio:,
+Variable:,Aero
+""
+FECHA
+2010-01-01 00:00:00,403.88821
+2010-02-01 00:00:00,421.64975
+2010-03-01 00:00:00,399.55294
+2010-04-01 00:00:00,574.8263
+2010-05-01 00:00:00,950.09799
+2010-06-01 00:00:00,1181.15144
+2010-07-01 00:00:00,1263.53549
+2010-08-01 00:00:00,968.61787
+2010-09-01 00:00:00,1022.05413
+2010-10-01 00:00:00,1027.23729
+2010-11-01 00:00:00,615.66829
+2010-12-01 00:00:00,332.11905

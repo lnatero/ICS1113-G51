@@ -9,7 +9,20 @@ abspath = os.path.abspath(__file__)
 root = os.path.dirname(abspath)
 os.chdir(root)
 
-def ProduccionSolar(u, t): 
+N_AEROGENERADORES = 10 #Cantidad de aerogeneradores por central eolica
+
+def limpiar_datos_eolica(file):
+    with open(file, encoding="utf-8") as f:
+        f = list(f)
+        meses = []
+        for i in range(len(f)):
+            f[i] = f[i].strip().split(",")
+            f[i].pop(0)
+        for lines in f[40:]:
+            meses.append(float(lines[0]))
+        return meses
+
+def ProduccionSolar(u, t): # Consideramos la construcción de plantas solares de 10 MW
     
     ZonaRoja= u_max * 3 // 5  #Ubicaciones de Arica a Petorca (Primero 3/5 de Chile)
     ZonaNaranja =  ZonaRoja + (u_max -  ZonaRoja) // 2 #Ubicaciones de Petorca hasta los Angeles
@@ -18,20 +31,30 @@ def ProduccionSolar(u, t):
     
     # Asigna diferentes valores de G_iut según la ubicacion
     if u <=  ZonaRoja:
-        return int(GeneracionSolar_ZonasRojas[t]) * 1000 # kW/m^2 * m^2
+        return int(GeneracionSolar_ZonasRojas[t]) * 32 # kW/m^2 * m^2
     
     elif  ZonaRoja < u <= ZonaNaranja:
-        return int(GeneracionSolar_ZonasNaranjas[t]) * 1000
+        return int(GeneracionSolar_ZonasNaranjas[t]) * 32 # 32 porque de esa forma se alcanza un promedio de 10 MW
     
     else:
-        return int(GeneracionSolar_ZonasAmarillas[t]) * 1000
+        return int(GeneracionSolar_ZonasAmarillas[t]) * 32
    
 def ProduccionEolica(u, t):
-    # Aquí puedes definir tu propia fórmula para calcular G_iut de energia eolica
-    a = 55000
-    b = 299000
-    g = random.randint(a, b) #Le puse un random pa q le hiciera competencian a la solar
-    return g
+    for zona in range(7):
+        if u < u_max // 8:
+            return int(limpiar_datos_eolica("datos/eolica/meses/zona0.csv")[t]) * N_AEROGENERADORES
+        elif u_max // 8 <= u < 2 * u_max // 8:
+            return int(limpiar_datos_eolica("datos/eolica/meses/zona1.csv")[t]) * N_AEROGENERADORES
+        elif 2 * u_max // 8 <= u < 3 * u_max // 8:
+            return int(limpiar_datos_eolica("datos/eolica/meses/zona2.csv")[t]) * N_AEROGENERADORES
+        elif 3 * u_max // 8 <= u < 4 * u_max // 8:
+            return int(limpiar_datos_eolica("datos/eolica/meses/zona3.csv")[t]) * N_AEROGENERADORES
+        elif 4 * u_max // 8 <= u < 6 * u_max // 8:
+            return int(limpiar_datos_eolica("datos/eolica/meses/zona4.csv")[t]) * N_AEROGENERADORES
+        elif 6 * u_max // 8 <= u < 7 * u_max // 8:
+            return int(limpiar_datos_eolica("datos/eolica/meses/zona5.csv")[t]) * N_AEROGENERADORES
+        else:
+            return int(limpiar_datos_eolica("datos/eolica/meses/zona6.csv")[t]) * N_AEROGENERADORES
 
 def ProduccionMaritima(u, t):
     # Aquí puedes definir tu propia fórmula para calcular G_iut de energia Maritima
@@ -218,9 +241,9 @@ print(os.getcwd())
 os.chdir("datos/tablas")
 print(os.getcwd())
 
-tablaGen.to_csv("tablaGeneracion.csv", index=False)
-tablaCostos_C.to_csv("tablaCostosContruccion.csv", index=False)
-tablaCostos_P.to_csv("tablaCostosProduccion.csv", index=False)
-tablaDemanda.to_csv("tablaDemanda.csv", index = False)
-tablaDisponibilidad.to_csv("tablaDisponibilidad.csv", index = False)
-tablaDistancias.to_csv("tablaDistancias.csv", index = False)
+tablaGen.to_csv("tablaGeneracion.csv", index=False, encoding='utf-8')
+tablaCostos_C.to_csv("tablaCostosContruccion.csv", index=False, encoding='utf-8')
+tablaCostos_P.to_csv("tablaCostosProduccion.csv", index=False, encoding='utf-8')
+tablaDemanda.to_csv("tablaDemanda.csv", index = False, encoding='utf-8')
+tablaDisponibilidad.to_csv("tablaDisponibilidad.csv", index = False, encoding='utf-8')
+tablaDistancias.to_csv("tablaDistancias.csv", index = False, encoding='utf-8')
