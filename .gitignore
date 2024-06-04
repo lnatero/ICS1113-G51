@@ -3,3 +3,4 @@ ignore/
 testing.py
 testing-1.ipynb
 testing.*
+test*
