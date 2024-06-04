@@ -70,15 +70,15 @@ def ProduccionHidroelectrica(u, t):
 
 def Calculo_CostoContruccion(i,u): #Calcular costo segun ubicacion y tipo de energia
     if i == 1: # Si es solar cuesta tanto contruir la central
-        return 993 # US por kW
+        return 993 * 10 * 1000 # $US por kW * 10 * M = $ 1 planta 10 MW
     elif i == 2: # Si es eolica cuesta tanto construir la central
-        return 1448 # US por kW
+        return 1448 * 100 * 1000 # US por kW * 100 * M = $ 1 planta 100 MW
     
 def Calculo_CostoProduccion(i,u): #Calcular costo Produccion segun ubicacion y tipo de energia
     if i == 1: # Si es solar cuesta tanto producirla  (y/o mantenerla)
-        return 993 * 0.015
+        return 993 * 10 * 1000 * 0.015
     elif i == 2: # Si es eolica cuesta tanto prducirla
-        return 1448 * 0.015
+        return 1448 * 100 * 1000 * 0.015
 
 
 def  AsignacionDemanda(k_max,k,t):#Calcular costo Produccion segun ubicacion y tipo de energia 
