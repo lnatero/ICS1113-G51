@@ -1,3 +1,5 @@
+__pycache__/
+ignore/
 testing.py
 testing-1.ipynb
 testing.*
