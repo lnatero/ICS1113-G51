@@ -113,7 +113,7 @@ m.optimize()
 print(f"Costo anual total : {m.ObjVal}")
 
 print(os.getcwd())
-os.chdir("datos/meses")
+os.chdir("resultados")
 print(os.getcwd())
 
 for t in T:
