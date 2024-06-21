@@ -24,6 +24,7 @@ F = {(row['i'], row['u']): row['F_iu'] for idx, row in costo_produccion.iterrows
 Distmax = 130
 M = 1000000000
 C_transporte = 100
+
 print("Generación Promedio Esperada (G):", G)
 print("Demanda Energética Promedio (D):", D)
 print("Costo de Construcción (C):", C)
