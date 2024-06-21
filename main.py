@@ -24,6 +24,7 @@ F = {(row['i'], row['u']): row['F_iu'] for idx, row in costo_produccion.iterrows
 Distmax = 130
 M = 1000000000
 C_transporte = 100
+max_plantas_subestacion = 10
 
 print("Generación Promedio Esperada (G):", G)
 print("Demanda Energética Promedio (D):", D)
@@ -97,6 +98,17 @@ for u in U:
     for k in K:
         for t in T:
             m.addConstr(X[u, k, t] <= z[u, k] * M, name=f"No_energy_disconnected_{u}_{k}_{t}")
+            
+            
+#Maxima cantidad de plantas que pueden satisfacer a una subestacion         
+for k in K:
+    for t in T:
+        m.addConstr(quicksum(z[u, k] for u in U) <= max_plantas_subestacion, name=f"Max_plants_per_substation_{k}_{t}")
+   
+#Reducir la densidad de plantas del mismo tipo: No pueden haber 5 plantas iguales en 5 ubicaciones consecutivas
+for i in I:
+    for u in range(len(U) - 4):  
+        m.addConstr(quicksum(y[i, U[u + j]] for j in range(5)) <= 4, name=f"No_five_consecutive_{i}_{u}")
             
 #No negatividad
 for u in U:
