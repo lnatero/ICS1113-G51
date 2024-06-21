@@ -165,6 +165,9 @@ def crear_tablaCostoProduccion(i_range, u_max):
     df = pd.DataFrame(datos)
     return df
 
+
+#Asignar sectores de Alta demanda
+Puntos_Altademanda =  [1,3,6,8] #Caso ejemplo: 123 sectores Mineros en el norte, 6 Region metropolitana (Capital) y 8 Region del biobio (Industrai Forestal)
 def crear_tablaDemanda(k_max, t_max):
     datos = {
         "k": [],
@@ -173,7 +176,11 @@ def crear_tablaDemanda(k_max, t_max):
     }
     for t in range(1, t_max + 1):
         for k in range(k_max + 1):
-            D_kt = AsignacionDemanda(k_max,k, t)
+            if k in Puntos_Altademanda:
+                D_kt = AsignacionDemanda(k_max,k, t) * 3
+            else:
+                D_kt = AsignacionDemanda(k_max,k, t)
+                
             datos["k"].append(k)
             datos["t"].append(t)
             datos["D_kt"].append(D_kt)
