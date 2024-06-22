@@ -21,9 +21,10 @@ A = {(row['u'], row['i']): row['A_ui'] for idx, row in disponibilidad_df.iterrow
 Dist = {(row['u'], row['k']): row['Dist_uk'] for idx, row in distancia_df.iterrows()}
 F = {(row['i'], row['u']): row['F_iu'] for idx, row in costo_produccion.iterrows()}
 
-Distmax = 130
+Distmax = 500
 M = 1000000000
 C_transporte = 100
+max_plantas_subestacion = M
 print("Generación Promedio Esperada (G):", G)
 print("Demanda Energética Promedio (D):", D)
 print("Costo de Construcción (C):", C)
@@ -103,18 +104,30 @@ for u in U:
         for t in T:
             m.addConstr(X[u, k, t] >= 0, name=f"Non_negativity_X_{u}_{k}_{t}")
 
+#Maxima cantidad de plantas que pueden satisfacer a una subestacion        
+for k in K:
+    for t in T:
+        m.addConstr(quicksum(z[u, k] for u in U) <= max_plantas_subestacion, name=f"Max_plants_per_substation_{k}_{t}")
+  
+#Reducir la densidad de plantas del mismo tipo: No pueden haber 5 plantas iguales en 5 ubicaciones consecutivas
+for i in I:
+    for u in range(len(U) - 4):  
+        m.addConstr(quicksum(y[i, U[u + j]] for j in range(5)) <= 4, name=f"No_five_consecutive_{i}_{u}")
+
 m.addConstr(quicksum(z[u, k] for u in U for k in K) >= 1, name="At_least_one_z")
 # Optimizar modelo
 m.optimize()
 
 
 
-# Imprimir costo total
-print(f"Costo anual total : {m.ObjVal}")
 
 print(os.getcwd())
 os.chdir("resultados")
 print(os.getcwd())
+
+generacion_total_anual = 0
+cant_solares_construidas = 0
+cant_eolicas_construidas = 0
 
 for t in T:
     filename = f'mes{t}.csv'
@@ -127,8 +140,22 @@ for t in T:
                     for i in I:
                         if y[i, u].X > 0.5:  # Verificar si se construyó una planta en la ubicación u
                             writer.writerow([u, i, k, X[u, k, t].X])
+                            generacion_total_anual += X[u, k, t].X
+                            if i == 1:
+                                cant_solares_construidas += 1
+                            else:
+                                cant_eolicas_construidas += 1
 
-for u in U:
-    for i in I:
-        if y[i, u].X == 1:
-            print(f"Se construyó una planta de tipo {i} en la ubicación {u}")
+# for u in U:
+#     for i in I:
+#         if y[i, u].X == 1:
+#             print(f"Se construyó una planta de tipo {i} en la ubicación {u}")
+
+# Imprimir costo total
+print(f"Costo anual total : {'{:,}'.format(round(m.ObjVal)).replace(',', '.')}")
+
+print(f"Generación total anual: {generacion_total_anual} MWh")
+
+print(f"Cantidad de plantas solares construidas: {cant_solares_construidas}")
+
+print(f"Cantidad de plantas eólicas construidas: {cant_eolicas_construidas}")

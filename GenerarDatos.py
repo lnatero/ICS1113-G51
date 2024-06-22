@@ -9,7 +9,7 @@ abspath = os.path.abspath(__file__)
 root = os.path.dirname(abspath)
 os.chdir(root)
 
-N_AEROGENERADORES = 10 #Cantidad de aerogeneradores por central eolica
+N_AEROGENERADORES = 100 #Cantidad de aerogeneradores por central eolica
 
 def limpiar_datos_eolica(file):
     with open(file, encoding="utf-8") as f:
@@ -23,38 +23,40 @@ def limpiar_datos_eolica(file):
         return meses
 
 def ProduccionSolar(u, t): # Consideramos la construcción de plantas solares de 10 MW
-    
+    pond = 1
     ZonaRoja= u_max * 3 // 5  #Ubicaciones de Arica a Petorca (Primero 3/5 de Chile)
     ZonaNaranja =  ZonaRoja + (u_max -  ZonaRoja) // 2 #Ubicaciones de Petorca hasta los Angeles
     
     #El resto de Ubicaciones es de los Angeles a Puerto Montt
     
     # Asigna diferentes valores de G_iut según la ubicacion
+    # if t in [10, 11]:
+    #     pond = 0.5
     if u <=  ZonaRoja:
-        return int(GeneracionSolar_ZonasRojas[t]) * 32 # kW/m^2 * m^2
+        return int(GeneracionSolar_ZonasRojas[t]) * 32 * 5 * pond # kW/m^2 * m^2
     
     elif  ZonaRoja < u <= ZonaNaranja:
-        return int(GeneracionSolar_ZonasNaranjas[t]) * 32 # 32 porque de esa forma se alcanza un promedio de 10 MW
+        return int(GeneracionSolar_ZonasNaranjas[t]) * 32 * 5 *pond # 32 porque de esa forma se alcanza un promedio de 10 MW
     
     else:
-        return int(GeneracionSolar_ZonasAmarillas[t]) * 32
+        return int(GeneracionSolar_ZonasAmarillas[t]) * 32 * 5 *pond
    
 def ProduccionEolica(u, t):
     for zona in range(7):
         if u < u_max // 8:
-            return int(limpiar_datos_eolica("datos/eolica/meses/zona0.csv")[t]) * N_AEROGENERADORES
+            return int(limpiar_datos_eolica("datos/eolica/meses/zona0.csv")[t-1]) * N_AEROGENERADORES
         elif u_max // 8 <= u < 2 * u_max // 8:
-            return int(limpiar_datos_eolica("datos/eolica/meses/zona1.csv")[t]) * N_AEROGENERADORES
+            return int(limpiar_datos_eolica("datos/eolica/meses/zona1.csv")[t-1]) * N_AEROGENERADORES
         elif 2 * u_max // 8 <= u < 3 * u_max // 8:
-            return int(limpiar_datos_eolica("datos/eolica/meses/zona2.csv")[t]) * N_AEROGENERADORES
+            return int(limpiar_datos_eolica("datos/eolica/meses/zona2.csv")[t-1]) * N_AEROGENERADORES
         elif 3 * u_max // 8 <= u < 4 * u_max // 8:
-            return int(limpiar_datos_eolica("datos/eolica/meses/zona3.csv")[t]) * N_AEROGENERADORES
+            return int(limpiar_datos_eolica("datos/eolica/meses/zona3.csv")[t-1]) * N_AEROGENERADORES
         elif 4 * u_max // 8 <= u < 6 * u_max // 8:
-            return int(limpiar_datos_eolica("datos/eolica/meses/zona4.csv")[t]) * N_AEROGENERADORES
+            return int(limpiar_datos_eolica("datos/eolica/meses/zona4.csv")[t-1]) * N_AEROGENERADORES
         elif 6 * u_max // 8 <= u < 7 * u_max // 8:
-            return int(limpiar_datos_eolica("datos/eolica/meses/zona5.csv")[t]) * N_AEROGENERADORES
+            return int(limpiar_datos_eolica("datos/eolica/meses/zona5.csv")[t-1]) * N_AEROGENERADORES
         else:
-            return int(limpiar_datos_eolica("datos/eolica/meses/zona6.csv")[t]) * N_AEROGENERADORES
+            return int(limpiar_datos_eolica("datos/eolica/meses/zona6.csv")[t-1]) * N_AEROGENERADORES
 
 def ProduccionMaritima(u, t):
     # Aquí puedes definir tu propia fórmula para calcular G_iut de energia Maritima
@@ -62,30 +64,28 @@ def ProduccionMaritima(u, t):
 
 def ProduccionHidroelectrica(u, t):
     # Aquí puedes definir tu propia fórmula para calcular G_iut de energia Hidroelectrica
-    return 100 + u * 10 + t * 2  
-
-
-
+    return 100 + u * 10 + t * 2
 
 
 def Calculo_CostoContruccion(i,u): #Calcular costo segun ubicacion y tipo de energia
     if i == 1: # Si es solar cuesta tanto contruir la central
-        return 993 * 10 * 1000 # $US por kW * 10 * M = $ 1 planta 10 MW
+        return 993 # $US por kW * 10 * M = $ 1 planta 10 MW
     elif i == 2: # Si es eolica cuesta tanto construir la central
-        return 1448 * 100 * 1000 # US por kW * 100 * M = $ 1 planta 100 MW
+        return 1448 # US por kW * 100 * M = $ 1 planta 100 MW
     
 def Calculo_CostoProduccion(i,u): #Calcular costo Produccion segun ubicacion y tipo de energia
     if i == 1: # Si es solar cuesta tanto producirla  (y/o mantenerla)
-        return 993 * 10 * 1000 * 0.015
+        return 993 * 0.015
     elif i == 2: # Si es eolica cuesta tanto prducirla
-        return 1448 * 100 * 1000 * 0.015
+        return 1448 * 0.015
 
 
-def  AsignacionDemanda(k_max,k,t):#Calcular costo Produccion segun ubicacion y tipo de energia 
-    return (DatosDemanda[t]//k_max)*700 #Demanda mensual dividia en partes iguales por cada subestacion, Se multiplica las 700 horas que tiene un mes.
+def AsignacionDemanda(k_max,k,t):#Calcular costo Produccion segun ubicacion y tipo de energia 
+    return (DatosDemanda[t]//k_max)*720 #Demanda mensual dividia en partes iguales por cada subestacion, Se multiplica las 700 horas que tiene un mes.
 
 
-def  AsignacionDisponibilidad(u,i): #Calcular costo Produccion segun ubicacion y tipo de energia
+def AsignacionDisponibilidad(u,i): #Calcular costo Produccion segun ubicacion y tipo de energia
+    # return random.randint(0, 1)
     return 1
     
     
@@ -224,7 +224,7 @@ def generar_tablaDistancias(u_max, k_max):
 # Especifica los rangos y valores máximos
 i_range = [1,2] #Energias (1=solar, 2=eolica, 3 = Hidroelectricas)
 k_max = 10 #Cantidad de subestaciones
-u_max = 50 #Cantidad de ubicaciones
+u_max = 1000 #Cantidad de ubicaciones
 t_max = 12# Meses
 
 # Crear la tabla
